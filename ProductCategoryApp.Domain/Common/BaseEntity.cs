@@ -8,13 +8,20 @@ namespace ProductCategoryApp.Domain.Common
 {
     public abstract class BaseEntity
     {
-        public int Id { get; protected set; }
-        public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; protected set; } = DateTime.UtcNow;
+        private readonly List<IDomainEvent> _domainEvents = new();
 
-        public void UpdateTimestamp()
+        public Guid Id { get; protected set; } = Guid.NewGuid();
+
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        protected void RaiseDomainEvent(IDomainEvent domainEvent)
         {
-            UpdatedAt = DateTime.UtcNow;
+            _domainEvents.Add(domainEvent);
+        }
+
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
         }
     }
 }
